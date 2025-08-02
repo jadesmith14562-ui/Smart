@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Correction - Smart Steps Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/logo.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                 <div class="logo"><img class="" src="/img/steps_smart.png" alt=""></div>
+                <span>Smart Steps Tutorial</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="btn btn-outline">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div id="loadingContainer" class="text-center">
+            <i class="fas fa-spinner fa-spin fa-3x text-primary"></i>
+            <p class="mt-3">Loading correction...</p>
+        </div>
+
+        <div id="correctionContainer" class="quiz-container hidden">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">
+                    <i class="fas fa-check-circle"></i>
+                    Quiz Correction
+                </h1>
+                <div id="correctionHeader" class="dashboard-subtitle"></div>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="finalScore">0</div>
+                        <div class="stat-label">Your Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="finalPercentage">0%</div>
+                        <div class="stat-label">Percentage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="correctAnswers">0</div>
+                        <div class="stat-label">Correct Answers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="questionsReview"></div>
+
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-primary btn-large">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+
+        <div id="errorContainer" class="quiz-container hidden">
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Correction not found or no longer available.</span>
+            </div>
+            <div class="text-center">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/quiz-correction.js"></script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+/* Teacher Events CSS - Collaborative JAMB Mock Interface */
+
+/* Import base styles */
+@import url('./teacher-login.css');
+
+/* Event-specific styles */
+:root {
+    --event-primary: #3b82f6;
+    --event-secondary: #6366f1;
+    --event-success: #10b981;
+    --event-warning: #f59e0b;
+    --event-danger: #ef4444;
+    --event-gradient: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+}
+
+/* Event Cards */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.event-card {
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border-light);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--event-gradient);
+}
+
+.event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.event-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.event-status {
+    padding: 0.5rem 1rem;
+    border-radius: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.event-status.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--event-success);
+    border: 1px solid var(--event-success);
+}
+
+.event-status.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--event-warning);
+    border: 1px solid var(--event-warning);
+}
+
+.event-status.completed {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-text-secondary);
+}
+
+.event-description {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.event-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    padding: 0.75rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.meta-item i {
+    color: var(--event-primary);
+    width: 16px;
+    text-align: center;
+}
+
+.subject-contribution {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--color-border-light);
+    position: relative;
+}
+
+.subject-contribution.my-subject {
+    border-color: var(--event-primary);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.subject-contribution.my-subject::before {
+    content: 'YOUR SUBJECT';
+    position: absolute;
+    top: -8px;
+    left: 16px;
+    background: var(--event-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.subject-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.subject-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.subject-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.subject-progress.completed {
+    color: var(--event-success);
+}
+
+.subject-progress.pending {
+    color: var(--event-warning);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-fill.completed {
+    background: linear-gradient(90deg, var(--event-success), #34d399);
+}
+
+.progress-fill.pending {
+    background: linear-gradient(90deg, var(--event-warning), #fbbf24);
+}
+
+.subject-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.event-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border-light);
+}
+
+/* Deadline Warning */
+.deadline-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid var(--event-warning);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--event-warning);
+    font-weight: 500;
+}
+
+.deadline-warning i {
+    font-size: 1.25rem;
+}
+
+.deadline-urgent {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--event-danger);
+    color: var(--event-danger);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Subject Icons */
+.subject-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    color: white;
+    font-weight: 600;
+}
+
+.subject-icon.mathematics { background: #ef4444; }
+.subject-icon.english { background: #8b5cf6; }
+.subject-icon.physics { background: #3b82f6; }
+.subject-icon.chemistry { background: #f59e0b; }
+.subject-icon.biology { background: #10b981; }
+
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--event-danger);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--color-text-secondary);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-muted);
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
+}
+
+.empty-state p {
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .event-card {
+        padding: 1.5rem;
+    }
+    
+    .event-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .event-meta {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .subject-actions,
+    .event-actions {
+        flex-direction: column;
+    }
+    
+    .subject-contribution {
+        padding: 1rem;
+    }
+    
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .event-card {
+        padding: 1rem;
+    }
+    
+    .subject-contribution {
+        padding: 1rem;
+    }
+    
+    .meta-item {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Loading Animation */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

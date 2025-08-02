@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAMB Mock Events - Smart Steps Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+    <link rel="stylesheet" href="/css/logo.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="logo"><img class="" src="img/steps_smart.png" alt=""></div>
+                <span>Smart Steps Tutorial</span>
+            </div>
+            <div class="nav-links">
+                <a href="/teacher-dashboard" class="btn btn-outline">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <span id="teacherName" class="text-primary"></span>
+                <button id="logoutBtn" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">
+                <i class="fas fa-calendar-alt"></i>
+                JAMB Mock Events
+            </h1>
+            <p class="dashboard-subtitle">Contribute questions to collaborative JAMB Mock examinations in your subject area.</p>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEvents">0</div>
+                    <div class="stat-label">Available Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="myContributions">0</div>
+                    <div class="stat-label">My Contributions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingEvents">0</div>
+                    <div class="stat-label">Pending Events</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <h2 class="section-title">
+                <i class="fas fa-tasks"></i>
+                Available Events for <span id="teacherSubject"></span>
+            </h2>
+            
+            <div id="eventsContainer">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">Loading events...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    checkAuthentication();
+    loadEventsData();
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    async function checkAuthentication() {
+        try {
+            const response = await fetch('/api/verify');
+            if (!response.ok) {
+                window.location.href = '/teacher-login';
+                return;
+            }
+            
+            const data = await response.json();
+            document.getElementById('teacherName').textContent = `${data.teacher.name}`;
+            document.getElementById('teacherSubject').textContent = data.teacher.subject;
+        } catch (error) {
+            window.location.href = '/teacher-login';
+        }
+    }
+
+    async function loadEventsData() {
+        try {
+            const response = await fetch('/api/teacher/events');
+            const data = await response.json();
+            
+            // Ensure events is an array
+            const events = Array.isArray(data.events) ? data.events : [];
+            
+            // Update statistics
+            document.getElementById('totalEvents').textContent = events.length;
+            document.getElementById('myContributions').textContent = data.myContributions;
+            document.getElementById('pendingEvents').textContent = data.pendingEvents;
+
+            displayEvents(events, data.teacherSubject);
+        } catch (error) {
+            console.error('Error loading events data:', error);
+            showAlert('Error loading events data', 'error');
+        }
+    }
+
+    function displayEvents(events, teacherSubject) {
+        const container = document.getElementById('eventsContainer');
+        
+        if (events.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No Events Available</h3>
+                    <p>There are currently no JAMB Mock events available for contribution. Check back later or contact the host.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const eventsHTML = `
+            <div class="events-grid">
+                ${events.map(event => {
+                    const mySubjectData = event.subjects.find(s => s.subject === teacherSubject);
+                    const myProgress = mySubjectData ? mySubjectData.questionCount : 0;
+                    const isMySubjectComplete = myProgress >= event.questionsPerSubject;
+                    const deadline = new Date(event.deadline);
+                    const now = new Date();
+                    const isUrgent = (deadline - now) < (24 * 60 * 60 * 1000); // Less than 24 hours
+                    
+                    return `
+                        <div class="event-card">
+                            ${!isMySubjectComplete && event.status === 'active' ? '<div class="notification-badge">!</div>' : ''}
+                            
+                            <div class="event-header">
+                                <div>
+                                    <h3 class="event-title">${event.title}</h3>
+                                    <span class="event-status ${event.status}">${event.status}</span>
+                                </div>
+                            </div>
+                            
+                            ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
+                            
+                            ${isUrgent && !isMySubjectComplete ? `
+                                <div class="deadline-warning ${isUrgent ? 'deadline-urgent' : ''}">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Deadline: ${deadline.toLocaleDateString()} at ${deadline.toLocaleTimeString()}</span>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="event-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${event.timeLimit} minutes</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-list-ol"></i>
+                                    <span>${event.questionsPerSubject} per subject</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Due: ${deadline.toLocaleDateString()}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>${event.totalQuestions} total questions</span>
+                                </div>
+                            </div>
+                            
+                            <div class="subject-contribution my-subject">
+                                <div class="subject-header">
+                                    <div class="subject-name">
+                                        <div class="subject-icon ${teacherSubject.toLowerCase()}">
+                                            ${getSubjectIcon(teacherSubject)}
+                                        </div>
+                                        ${teacherSubject}
+                                    </div>
+                                    <div class="subject-progress ${myProgress > 0 ? 'completed' : 'pending'}">
+                                        <i class="fas fa-${myProgress > 0 ? 'check-circle' : 'clock'}"></i>
+                                        ${myProgress} questions
+                                    </div>
+                                </div>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill ${myProgress > 0 ? 'completed' : 'pending'}" 
+                                         style="width: ${Math.min((myProgress / 50) * 100, 100)}%"></div>
+                                </div>
+                                
+                                <div class="subject-actions">
+                                    ${event.status === 'active' ? `
+                                        <button class="btn btn-primary" onclick="contributeQuestions('${event._id}')">
+                                            <i class="fas fa-${myProgress > 0 ? 'edit' : 'plus'}"></i>
+                                            ${myProgress > 0 ? 'Edit Questions' : 'Add Questions'}
+                                        </button>
+                                    ` : ''}
+                                    ${myProgress > 0 ? `
+                                        <button class="btn btn-outline" onclick="viewMyQuestions('${event._id}')">
+                                            <i class="fas fa-eye"></i>
+                                            View My Questions
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="event-actions">
+                                <button class="btn btn-outline" onclick="viewEventDetails('${event._id}')">
+                                    <i class="fas fa-info-circle"></i>
+                                    Event Details
+                                </button>
+                                ${event.status === 'published' ? `
+                                    <button class="btn btn-secondary" onclick="viewEventLink('${event.shareId}')">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        Student Link
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = eventsHTML;
+    }
+
+    function getSubjectIcon(subject) {
+        const icons = {
+            'Mathematics': '∑',
+            'English': 'En',
+            'Physics': 'Φ',
+            'Chemistry': 'Ch',
+            'Biology': 'Bio'
+        };
+        return icons[subject] || subject.charAt(0);
+    }
+
+    // Global functions for event actions
+    window.contributeQuestions = function(eventId) {
+        window.location.href = `/teacher/event-contribute/${eventId}`;
+    };
+
+    window.viewMyQuestions = function(eventId) {
+        window.location.href = `/teacher/event-questions/${eventId}`;
+    };
+
+    window.viewEventDetails = function(eventId) {
+        window.location.href = `/teacher/event-details/${eventId}`;
+    };
+
+    window.viewEventLink = function(shareId) {
+        const link = `${window.location.origin}/jamb-mock/${shareId}`;
+        navigator.clipboard.writeText(link).then(() => {
+            showAlert('Event link copied to clipboard!', 'success');
+        }).catch(() => {
+            prompt('Copy this link:', link);
+        });
+    };
+
+    function showAlert(message, type) {
+        // Create alert container if it doesn't exist
+        let alertContainer = document.getElementById('alert-container');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'alert-container';
+            alertContainer.style.position = 'fixed';
+            alertContainer.style.top = '20px';
+            alertContainer.style.right = '20px';
+            alertContainer.style.zIndex = '1000';
+            document.body.appendChild(alertContainer);
+        }
+
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type}" style="min-width: 300px; box-shadow: var(--shadow-lg);">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
+                ${message}
+            </div>
+        `;
+        
+        setTimeout(() => {
+            alertContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    async function logout() {
+        try {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Logout error:', error);
+            window.location.href = '/';
+        }
+    }
+});
+</script>
+</body>
+</html>
+<style>
+    /* Modern Teacher Events Dashboard Stylesheet */
+
+/* CSS Custom Properties */
+:root {
+  /* Color Palette */
+  --primary-50: #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-200: #bae6fd;
+  --primary-500: #0ea5e9;
+  --primary-600: #0284c7;
+  --primary-700: #0369a1;
+  --primary-800: #075985;
+  --primary-900: #0c4a6e;
+  
+  --secondary-50: #f8fafc;
+  --secondary-100: #f1f5f9;
+  --secondary-200: #e2e8f0;
+  --secondary-300: #cbd5e1;
+  --secondary-400: #94a3b8;
+  --secondary-500: #64748b;
+  --secondary-600: #475569;
+  --secondary-700: #334155;
+  --secondary-800: #1e293b;
+  --secondary-900: #0f172a;
+  
+  --success-500: #10b981;
+  --success-600: #059669;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+  
+  /* Typography */
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--secondary-800);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--secondary-50) 100%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header Styles */
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--secondary-200);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 600;
+  color: var(--secondary-900);
+  font-size: 1.25rem;
+}
+
+.logo img {
+  height: 2.5rem;
+  width: auto;
+  border-radius: var(--radius-md);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+#teacherName {
+  font-weight: 500;
+  color: var(--primary-700);
+  padding: var(--space-2) var(--space-4);
+  background: var(--primary-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--primary-200);
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-lg);
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-slow);
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-700), var(--primary-600));
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--secondary-600), var(--secondary-500));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--secondary-700), var(--secondary-600));
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--secondary-700);
+  border: 1px solid var(--secondary-300);
+  backdrop-filter: blur(10px);
+}
+
+.btn-outline:hover {
+  background: white;
+  border-color: var(--primary-300);
+  color: var(--primary-700);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Main Content */
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.dashboard-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--secondary-900);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.dashboard-title i {
+  color: var(--primary-600);
+  font-size: 2rem;
+}
+
+.dashboard-subtitle {
+  font-size: 1.125rem;
+  color: var(--secondary-600);
+  margin-bottom: var(--space-8);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Dashboard Stats */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-12);
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--secondary-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  text-align: center;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+  transform: scaleX(0);
+  transition: transform var(--transition-base);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-300);
+}
+
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-600);
+  margin-bottom: var(--space-2);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--secondary-600);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Quiz Container */
+.quiz-container {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--secondary-200);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-lg);
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--secondary-900);
+  margin-bottom: var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.section-title i {
+  color: var(--primary-600);
+}
+
+/* Events Grid */
+.events-grid {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.event-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--secondary-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-500), var(--success-500));
+  transform: scaleX(0);
+  transition: transform var(--transition-base);
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-300);
+}
+
+.event-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-md);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Event Header */
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-6);
+  gap: var(--space-4);
+}
+
+.event-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--secondary-900);
+  margin-bottom: var(--space-2);
+  line-height: 1.3;
+}
+
+.event-status {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.event-status.active {
+  background: var(--success-100);
+  color: var(--success-700);
+  border: 1px solid var(--success-200);
+}
+
+.event-status.published {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+}
+
+.event-status.draft {
+  background: var(--secondary-100);
+  color: var(--secondary-700);
+  border: 1px solid var(--secondary-200);
+}
+
+.event-description {
+  color: var(--secondary-600);
+  margin-bottom: var(--space-6);
+  line-height: 1.6;
+}
+
+/* Deadline Warning */
+.deadline-warning {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.deadline-urgent {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-200);
+  animation: urgentPulse 3s infinite;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { background: var(--warning-50); }
+  50% { background: var(--warning-100); }
+}
+
+/* Event Meta */
+.event-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  background: var(--secondary-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--secondary-200);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--secondary-700);
+}
+
+.meta-item i {
+  color: var(--primary-600);
+  width: 16px;
+}
+
+/* Subject Contribution */
+.subject-contribution {
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  background: linear-gradient(135deg, var(--primary-50), var(--secondary-50));
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.my-subject {
+  border-left: 4px solid var(--primary-500);
+}
+
+.subject-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.subject-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 600;
+  color: var(--secondary-900);
+}
+
+.subject-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: white;
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+}
+
+.subject-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.subject-progress.completed {
+  background: var(--success-100);
+  color: var(--success-700);
+  border: 1px solid var(--success-200);
+}
+
+.subject-progress.pending {
+  background: var(--warning-100);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-200);
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--secondary-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill.completed {
+  background: linear-gradient(90deg, var(--success-500), var(--success-600));
+}
+
+.progress-fill.pending {
+  background: linear-gradient(90deg, var(--warning-500), var(--warning-600));
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Subject Actions */
+.subject-actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* Event Actions */
+.event-actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--secondary-200);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--space-16) var(--space-8);
+  color: var(--secondary-600);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: var(--secondary-400);
+  margin-bottom: var(--space-6);
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--secondary-700);
+  margin-bottom: var(--space-4);
+}
+
+.empty-state p {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-primary { color: var(--primary-600); }
+.mt-2 { margin-top: var(--space-2); }
+.fa-spin { animation: spin 1s infinite linear; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Alert Styles */
+.alert {
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 500;
+  border: 1px solid;
+  animation: slideIn var(--transition-base);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.alert-success {
+  background: var(--success-50);
+  color: var(--success-700);
+  border-color: var(--success-200);
+}
+
+.alert-warning {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border-color: var(--warning-200);
+}
+
+.alert-error {
+  background: var(--error-50);
+  color: var(--error-700);
+  border-color: var(--error-200);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+  
+  .nav-links {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .event-meta {
+    grid-template-columns: 1fr;
+  }
+  
+  .event-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .subject-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  
+  .event-actions,
+  .subject-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: var(--space-6) var(--space-4);
+  }
+  
+  .quiz-container {
+    padding: var(--space-6);
+  }
+  
+  .event-card {
+    padding: var(--space-6);
+  }
+  
+  .dashboard-title {
+    font-size: 1.75rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+}
+
+/* Focus Styles for Accessibility */
+.btn:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-500: #0066cc;
+    --secondary-800: #000000;
+    --secondary-600: #333333;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>

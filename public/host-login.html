@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Login - Smart Steps Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/teacher-login.css">
+    <link rel="stylesheet" href="css/logo.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="logo"><img class="" src="img/steps_smart.png" alt=""></div>
+                <span>Smart Steps Tutorial</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="btn btn-outline">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+                <a href="/teacher-login" class="btn btn-primary">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    Teacher Login
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="form-container">
+            <h2 class="form-title">
+                <i class="fas fa-crown"></i>
+                Host Login
+            </h2>
+            
+            <div id="alert-container"></div>
+            
+            <form id="hostLoginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login to Host Dashboard
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p>Need teacher access? <a href="/teacher-login" style="color: var(--primary-color);">Teacher Login</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/host-login.js"></script>
+</body>
+</html>

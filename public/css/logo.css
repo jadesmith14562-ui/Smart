@@ -1,0 +1,26 @@
+    .logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.logo img {
+  height: 70px;
+  width: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  color: #4f46e5; /* Elegant blue */
+}
+
+.logo:hover img {
+  transform: scale(1.1) rotate(5deg);
+}

@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Dashboard - Smart Steps Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <link rel="stylesheet" href="/css/logo.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="logo"><img class="" src="img/steps_smart.png" alt=""></div>
+                <span>Smart Steps Tutorial - Host</span>
+            </div>
+            <div class="nav-links">
+                <span id="hostName" class="text-primary"></span>
+                <button id="logoutBtn" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">
+                <i class="fas fa-crown"></i>
+                Host Dashboard
+            </h1>
+            <p class="dashboard-subtitle">Create and manage JAMB Mock events for collaborative teacher participation.</p>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEvents">0</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeEvents">0</div>
+                    <div class="stat-label">Active Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalQuestions">0</div>
+                    <div class="stat-label">Total Questions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTeachers">0</div>
+                    <div class="stat-label">Registered Teachers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalResponses">0</div>
+                    <div class="stat-label">Student Responses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalQuizzes">0</div>
+                    <div class="stat-label">Teacher Quizzes</div>
+                </div>
+            </div>
+
+            <div class="hero-actions">
+                <button id="createEventBtn" class="btn btn-primary btn-large">
+                    <i class="fas fa-plus"></i>
+                    Create New JAMB Mock Event
+                </button>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-alt"></i>
+                JAMB Mock Events
+            </h2>
+            
+            <div id="eventsContainer">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">Loading events...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <h2 class="section-title">
+                <i class="fas fa-clipboard-list"></i>
+                Teacher Quizzes
+            </h2>
+            
+            <div id="teacherQuizzesContainer">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">Loading teacher quizzes...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <h2 class="section-title">
+                <i class="fas fa-users"></i>
+                Teacher Management
+            </h2>
+            
+            <div id="teachersContainer">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">Loading teachers...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Event Modal -->
+    <div id="createEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Create New JAMB Mock Event</h3>
+                <span class="close">&times;</span>
+            </div>
+            
+            <form id="createEventForm">
+                <div class="form-group">
+                    <label for="eventTitle" class="form-label">
+                        <i class="fas fa-heading"></i>
+                        Event Title
+                    </label>
+                    <input type="text" id="eventTitle" name="title" class="form-input" required 
+                           placeholder="e.g., JAMB Mock 2025 - First Quarter">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription" class="form-label">
+                        <i class="fas fa-align-left"></i>
+                        Description
+                    </label>
+                    <textarea id="eventDescription" name="description" class="form-input" 
+                              placeholder="Brief description of the mock exam..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventTimeLimit" class="form-label">
+                        <i class="fas fa-clock"></i>
+                        Time Limit (minutes)
+                    </label>
+                    <input type="number" id="eventTimeLimit" name="timeLimit" class="form-input" 
+                           min="60" max="240" value="180" required>
+                    <small class="form-hint">Recommended: 180 minutes (3 hours) for JAMB Mock</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-info-circle"></i>
+                        Question Distribution
+                    </label>
+                    <div class="question-distribution">
+                        <div class="distribution-item">
+                            <span>English Language:</span>
+                            <strong>10+ questions</strong>
+                        </div>
+                        <div class="distribution-item">
+                            <span>Mathematics:</span>
+                            <strong>10+ questions</strong>
+                        </div>
+                        <div class="distribution-item">
+                            <span>Physics:</span>
+                            <strong>10+ questions</strong>
+                        </div>
+                        <div class="distribution-item">
+                            <span>Chemistry:</span>
+                            <strong>10+ questions</strong>
+                        </div>
+                        <div class="distribution-item">
+                            <span>Biology:</span>
+                            <strong>10+ questions</strong>
+                        </div>
+                    </div>
+                    <small class="form-hint">Each teacher needs to contribute at least 10 questions in their subject</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-calendar"></i>
+                        Event Deadline
+                    </label>
+                    <input type="datetime-local" id="eventDeadline" name="deadline" class="form-input" required>
+                    <small class="form-hint">Teachers must complete their questions before this deadline</small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelEventBtn">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i>
+                        Create Event
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    checkAuthentication();
+    loadDashboardData();
+
+    // DOM Elements
+    const createEventBtn = document.getElementById('createEventBtn');
+    const createEventModal = document.getElementById('createEventModal');
+    const createEventForm = document.getElementById('createEventForm');
+    const cancelEventBtn = document.getElementById('cancelEventBtn');
+    const closeBtn = document.querySelector('.close');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Event Listeners
+    createEventBtn.addEventListener('click', openCreateEventModal);
+    cancelEventBtn.addEventListener('click', closeCreateEventModal);
+    closeBtn.addEventListener('click', closeCreateEventModal);
+    createEventForm.addEventListener('submit', createEvent);
+    logoutBtn.addEventListener('click', logout);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === createEventModal) {
+            closeCreateEventModal();
+        }
+    });
+
+    async function checkAuthentication() {
+        try {
+            console.log('Checking host authentication...');
+            const response = await fetch('/api/host/verify');
+            console.log('Host verification response:', response.status);
+            
+            if (!response.ok) {
+                console.log('Host verification failed, redirecting to login');
+                throw new Error('Authentication failed');
+            }
+            
+            const data = await response.json();
+            console.log('Host verification data:', data);
+            
+            if (data.authenticated && data.host) {
+                document.getElementById('hostName').textContent = `Welcome, ${data.host.name}`;
+                console.log('Host authentication successful');
+            } else {
+                throw new Error('Invalid authentication response');
+            }
+        } catch (error) {
+            console.error('Host authentication error:', error);
+            // Clear any existing tokens and redirect
+            document.cookie = 'hostToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            window.location.href = '/host-login';
+        }
+    }
+
+    async function loadDashboardData() {
+        try {
+            console.log('Loading dashboard data...');
+            
+            // Load events
+            const eventsResponse = await fetch('/api/host/events');
+            console.log('Events response status:', eventsResponse.status);
+            
+            if (!eventsResponse.ok) {
+                throw new Error('Failed to load events');
+            }
+            
+            const eventsData = await eventsResponse.json();
+            console.log('Events data received:', eventsData);
+            const events = Array.isArray(eventsData) ? eventsData : [];
+            console.log('Processed events array:', events.length);
+            
+            // Load teachers
+            const teachersResponse = await fetch('/api/host/teachers');
+            console.log('Teachers response status:', teachersResponse.status);
+            
+            if (!teachersResponse.ok) {
+                throw new Error('Failed to load teachers');
+            }
+            
+            const teachersData = await teachersResponse.json();
+            console.log('Teachers data received:', teachersData);
+            const teachers = Array.isArray(teachersData) ? teachersData : [];
+            console.log('Processed teachers array:', teachers.length);
+
+            // Load teacher quizzes
+            const quizzesResponse = await fetch('/api/host/quizzes');
+            console.log('Quizzes response status:', quizzesResponse.status);
+            
+            let quizzes = [];
+            if (quizzesResponse.ok) {
+                const quizzesData = await quizzesResponse.json();
+                console.log('Quizzes data received:', quizzesData);
+                quizzes = Array.isArray(quizzesData) ? quizzesData : [];
+                console.log('Processed quizzes array:', quizzes.length);
+            } else {
+                console.error('Failed to load quizzes');
+            }
+
+            // Load all student responses for statistics
+            const responsesResponse = await fetch('/api/host/responses');
+            let totalResponsesCount = 0;
+            if (responsesResponse.ok) {
+                const responsesData = await responsesResponse.json();
+                totalResponsesCount = Array.isArray(responsesData) ? responsesData.length : 0;
+                console.log('Total responses:', totalResponsesCount);
+            }
+
+            // Calculate statistics
+            const activeEvents = events.filter(event => event.status === 'active').length;
+            const totalQuestions = events.reduce((sum, event) => sum + (event.totalQuestions || 0), 0);
+
+            // Update statistics
+            document.getElementById('totalEvents').textContent = events.length;
+            document.getElementById('activeEvents').textContent = activeEvents;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('totalTeachers').textContent = teachers.length;
+            document.getElementById('totalResponses').textContent = totalResponsesCount;
+            document.getElementById('totalQuizzes').textContent = quizzes.length;
+
+            displayEvents(events);
+            displayTeachers(teachers);
+            displayTeacherQuizzes(quizzes);
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            showAlert('Error loading dashboard data', 'error');
+        }
+    }
+
+    function displayEvents(events) {
+        const container = document.getElementById('eventsContainer');
+        
+        console.log('Displaying events:', events.length);
+        
+        if (events.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-plus"></i>
+                    <h3>No Events Created Yet</h3>
+                    <p>Create your first JAMB Mock event to get started with collaborative question creation.</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('createEventBtn').click()">
+                        <i class="fas fa-plus"></i>
+                        Create First Event
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        const eventsHTML = `
+            <div class="events-grid">
+                ${events.map((event, index) => {
+                    console.log(`Processing event ${index}:`, event.title);
+                    const progress = calculateEventProgress(event);
+                    const statusClass = getEventStatusClass(event);
+                    
+                    return `
+                        <div class="event-card">
+                            <div class="event-header">
+                                <div>
+                                    <h3 class="event-title">${event.title}</h3>
+                                    <span class="event-status ${statusClass}">${event.status}</span>
+                                </div>
+                            </div>
+                            
+                            <p class="event-description">${event.description || 'No description provided'}</p>
+                            
+                            <div class="event-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${event.timeLimit} minutes</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-list-ol"></i>
+                                    <span>${event.totalQuestions || 0} total questions</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>Due: ${new Date(event.deadline).toLocaleDateString()}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-share"></i>
+                                    <span>${event.shareId}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="event-progress">
+                                <div class="progress-label">
+                                    <span>Subject Progress</span>
+                                    <span>${progress.completedSubjects}/5 subjects ready</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress.percentage}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="event-subjects">
+                                ${['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology'].map(subject => {
+                                    const subjectData = (event.subjects || []).find(s => s.subject === subject);
+                                    const questionCount = subjectData ? subjectData.questionCount : 0;
+                                    const isCompleted = questionCount >= 10;
+                                    
+                                    return `
+                                        <div class="subject-status ${isCompleted ? 'completed' : 'pending'}">
+                                            <i class="fas fa-${isCompleted ? 'check-circle' : 'clock'}"></i>
+                                            <span>${subject}: ${questionCount} questions</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            
+                            <div class="event-actions">
+                                <button class="btn btn-outline" onclick="viewEventDetails('${event._id}')">
+                                    <i class="fas fa-eye"></i>
+                                    View Details
+                                </button>
+                                <button class="btn btn-secondary" onclick="viewEventResponses('${event._id}')">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Responses
+                                </button>
+                                ${event.status === 'completed' ? `
+                                    <button class="btn btn-primary" onclick="publishEvent('${event._id}')">
+                                        <i class="fas fa-share"></i>
+                                        Publish
+                                    </button>
+                                ` : ''}
+                                ${event.status === 'published' ? `
+                                    <button class="btn btn-success" onclick="copyEventLink('${event.shareId}')">
+                                        <i class="fas fa-copy"></i>
+                                        Copy Link
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-error" onclick="deleteEvent('${event._id}', '${event.title}')">
+                                    <i class="fas fa-trash"></i>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = eventsHTML;
+    }
+
+    function displayTeacherQuizzes(quizzes) {
+        const container = document.getElementById('teacherQuizzesContainer');
+        
+        console.log('Displaying teacher quizzes:', quizzes.length);
+        
+        if (quizzes.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>No Teacher Quizzes Found</h3>
+                    <p>Teachers haven't created any individual quizzes yet. They can create quizzes from their dashboard.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Group quizzes by subject
+        const quizzesBySubject = quizzes.reduce((acc, quiz) => {
+            const subject = quiz.subject || 'Other';
+            if (!acc[subject]) acc[subject] = [];
+            acc[subject].push(quiz);
+            return acc;
+        }, {});
+
+        const quizzesHTML = `
+            <div class="quizzes-overview">
+                <div class="quizzes-summary">
+                    <div class="summary-item">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Total: ${quizzes.length} quizzes</span>
+                    </div>
+                    <div class="summary-item">
+                        <i class="fas fa-users"></i>
+                        <span>Responses: ${quizzes.reduce((sum, q) => sum + (q.responseCount || 0), 0)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <i class="fas fa-book"></i>
+                        <span>Subjects: ${Object.keys(quizzesBySubject).length}</span>
+                    </div>
+                </div>
+                
+                <div class="quizzes-by-subject">
+                    ${Object.entries(quizzesBySubject).map(([subject, subjectQuizzes]) => `
+                        <div class="subject-section">
+                            <h4 class="subject-title">
+                                <i class="fas fa-book"></i>
+                                ${subject} (${subjectQuizzes.length} quizzes)
+                            </h4>
+                            <div class="quizzes-grid">
+                                ${subjectQuizzes.map(quiz => `
+                                    <div class="quiz-card">
+                                        <div class="quiz-header">
+                                            <h5 class="quiz-title">${quiz.title}</h5>
+                                            <span class="quiz-subject">${quiz.subject}</span>
+                                        </div>
+                                        
+                                        <div class="quiz-teacher">
+                                            <i class="fas fa-user"></i>
+                                            <span>${quiz.teacherId ? quiz.teacherId.name : 'Unknown Teacher'}</span>
+                                        </div>
+                                        
+                                        <div class="quiz-stats">
+                                            <div class="quiz-stat">
+                                                <i class="fas fa-question-circle"></i>
+                                                <span>${quiz.questions ? quiz.questions.length : 0} questions</span>
+                                            </div>
+                                            <div class="quiz-stat">
+                                                <i class="fas fa-users"></i>
+                                                <span>${quiz.responseCount || 0} responses</span>
+                                            </div>
+                                            <div class="quiz-stat">
+                                                <i class="fas fa-clock"></i>
+                                                <span>${quiz.timeLimit || 'No limit'} min</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="quiz-meta">
+                                            <small>
+                                                <i class="fas fa-calendar"></i>
+                                                Created: ${new Date(quiz.createdAt).toLocaleDateString()}
+                                            </small>
+                                        </div>
+                                        
+                                        <div class="quiz-actions">
+                                            <button class="btn btn-outline btn-sm" onclick="copyQuizLink('${quiz.shareId}')">
+                                                <i class="fas fa-copy"></i>
+                                                Copy Link
+                                            </button>
+                                            <button class="btn btn-secondary btn-sm" onclick="viewQuizResponses('${quiz._id}')">
+                                                <i class="fas fa-chart-bar"></i>
+                                                Responses (${quiz.responseCount || 0})
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML = quizzesHTML;
+    }
+
+    function displayTeachers(teachers) {
+        const container = document.getElementById('teachersContainer');
+        
+        if (teachers.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>No Teachers Registered</h3>
+                    <p>Teachers need to register before they can contribute to JAMB Mock events.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const teachersHTML = `
+            <div class="teachers-grid">
+                ${teachers.map(teacher => `
+                    <div class="teacher-card">
+                        <div class="teacher-header">
+                            <div class="teacher-avatar">
+                                ${teacher.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="teacher-info">
+                                <h4>${teacher.name}</h4>
+                                <span class="teacher-subject">${teacher.subject}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="teacher-stats">
+                            <div class="teacher-stat">
+                                <div class="teacher-stat-number">${teacher.quizCount || 0}</div>
+                                <div class="teacher-stat-label">Quizzes</div>
+                            </div>
+                            <div class="teacher-stat">
+                                <div class="teacher-stat-number">${teacher.eventParticipation || 0}</div>
+                                <div class="teacher-stat-label">Events</div>
+                            </div>
+                        </div>
+                        
+                        <div class="meta-item" style="margin-top: 1rem;">
+                            <i class="fas fa-envelope"></i>
+                            <span>${teacher.email}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = teachersHTML;
+    }
+
+    function calculateEventProgress(event) {
+        console.log('Calculating progress for event:', event.title);
+        console.log('Event subjects:', event.subjects);
+        
+        if (!event.subjects || !Array.isArray(event.subjects)) {
+            console.log('No subjects found, returning 0 progress');
+            return { completedSubjects: 0, totalSubjects: 5, percentage: 0 };
+        }
+        
+        const completedSubjects = event.subjects.filter(subject => subject.questionCount >= 10).length;
+        const totalSubjects = 5; // Mathematics, English, Physics, Chemistry, Biology
+        const percentage = Math.round((completedSubjects / totalSubjects) * 100);
+        
+        console.log(`Progress: ${completedSubjects}/${totalSubjects} subjects = ${percentage}%`);
+        return { completedSubjects, totalSubjects, percentage };
+    }
+
+    function getEventStatusClass(event) {
+        return event.status;
+    }
+
+    function openCreateEventModal() {
+        // Set default deadline to 7 days from now
+        const defaultDeadline = new Date();
+        defaultDeadline.setDate(defaultDeadline.getDate() + 7);
+        document.getElementById('eventDeadline').value = defaultDeadline.toISOString().slice(0, 16);
+        
+        createEventModal.style.display = 'block';
+    }
+
+    function closeCreateEventModal() {
+        createEventModal.style.display = 'none';
+        createEventForm.reset();
+    }
+
+    async function createEvent(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const eventData = {
+            title: formData.get('title'),
+            description: formData.get('description'),
+            timeLimit: parseInt(formData.get('timeLimit')),
+            deadline: formData.get('deadline')
+        };
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnContent = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loading"></span> Creating Event...';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/host/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(eventData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showAlert('JAMB Mock event created successfully! Teachers have been notified.', 'success');
+                closeCreateEventModal();
+                setTimeout(() => {
+                    loadDashboardData();
+                }, 2000);
+            } else {
+                showAlert(result.error || 'Failed to create event', 'error');
+            }
+        } catch (error) {
+            showAlert('Network error. Please try again.', 'error');
+        } finally {
+            submitBtn.innerHTML = originalBtnContent;
+            submitBtn.disabled = false;
+        }
+    }
+
+    // Global functions for event actions
+    window.viewEventDetails = function(eventId) {
+        window.location.href = `/host/event-details/${eventId}`;
+    };
+
+    window.viewEventResponses = function(eventId) {
+        window.location.href = `/host/event-responses/${eventId}`;
+    };
+
+    window.viewQuizResponses = function(quizId) {
+        // You can create a new page for quiz responses or handle it in a modal
+        window.open(`/quiz-results/${quizId}`, '_blank');
+    };
+
+    window.copyEventLink = function(shareId) {
+        const link = `${window.location.origin}/jamb-mock/${shareId}`;
+        navigator.clipboard.writeText(link).then(() => {
+            showAlert('JAMB Mock link copied to clipboard!', 'success');
+        }).catch(() => {
+            prompt('Copy this JAMB Mock link:', link);
+        });
+    };
+
+    window.copyQuizLink = function(shareId) {
+        const link = `${window.location.origin}/quiz/${shareId}`;
+        navigator.clipboard.writeText(link).then(() => {
+            showAlert('Quiz link copied to clipboard!', 'success');
+        }).catch(() => {
+            prompt('Copy this quiz link:', link);
+        });
+    };
+
+    window.publishEvent = async function(eventId) {
+        const confirmed = confirm('Are you sure you want to publish this JAMB Mock event? Once published, students can take the exam.');
+        
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`/api/host/events/${eventId}/publish`, {
+                method: 'POST'
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showAlert('Event published successfully! Students can now access the JAMB Mock.', 'success');
+                setTimeout(() => {
+                    loadDashboardData();
+                }, 2000);
+            } else {
+                showAlert(result.error || 'Failed to publish event', 'error');
+            }
+        } catch (error) {
+            showAlert('Network error. Please try again.', 'error');
+        }
+    };
+
+    window.deleteEvent = async function(eventId, eventTitle) {
+        const confirmed = confirm(`Are you sure you want to delete the event "${eventTitle}"?\n\nThis action will:\n• Delete the event permanently\n• Delete all associated questions\n• Delete all student responses\n• Cannot be undone\n\nClick OK to confirm deletion.`);
+        
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`/api/host/events/${eventId}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showAlert('Event deleted successfully!', 'success');
+                setTimeout(() => {
+                    loadDashboardData();
+                }, 1500);
+            } else {
+                showAlert(result.error || 'Failed to delete event', 'error');
+            }
+        } catch (error) {
+            showAlert('Network error. Please try again.', 'error');
+        }
+    };
+
+    function showAlert(message, type) {
+        // Create alert container if it doesn't exist
+        let alertContainer = document.getElementById('alert-container');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'alert-container';
+            alertContainer.style.position = 'fixed';
+            alertContainer.style.top = '20px';
+            alertContainer.style.right = '20px';
+            alertContainer.style.zIndex = '1000';
+            document.body.appendChild(alertContainer);
+        }
+
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type}" style="min-width: 300px; box-shadow: var(--shadow-lg);">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
+                ${message}
+            </div>
+        `;
+        
+        setTimeout(() => {
+            alertContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    async function logout() {
+        try {
+            await fetch('/api/host/logout', { method: 'POST' });
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Logout error:', error);
+            window.location.href = '/';
+        }
+    }
+});
+</script>
+</body>
+</html>
+<style>
+    /* Modern Host Dashboard Stylesheet */
+
+/* CSS Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Color Palette */
+  --primary-50: #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-200: #bae6fd;
+  --primary-300: #7dd3fc;
+  --primary-400: #38bdf8;
+  --primary-500: #0ea5e9;
+  --primary-600: #0284c7;
+  --primary-700: #0369a1;
+  --primary-800: #075985;
+  --primary-900: #0c4a6e;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+
+  --error-400: #f87171;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+
+  /* Typography */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.25s ease-out;
+  --transition-slow: 0.4s ease-out;
+
+  /* Layout */
+  --header-height: 4rem;
+  --sidebar-width: 16rem;
+  --container-max-width: 1400px;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--gray-700);
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header Styles */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-200);
+  height: var(--header-height);
+}
+
+.navbar {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--gray-800);
+}
+
+.logo img {
+  height: 2.5rem;
+  width: auto;
+  border-radius: var(--radius-md);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.text-primary {
+  color: var(--primary-600);
+  font-weight: 500;
+}
+
+/* Main Content */
+.main {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  margin-bottom: var(--space-12);
+  text-align: center;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.dashboard-title i {
+  color: var(--primary-500);
+  filter: drop-shadow(0 4px 8px rgba(14, 165, 233, 0.2));
+}
+
+.dashboard-subtitle {
+  font-size: 1.125rem;
+  color: var(--gray-600);
+  margin-bottom: var(--space-10);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Dashboard Stats */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
+}
+
+.stat-card {
+  background: white;
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  border: 1px solid var(--gray-100);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-400), var(--primary-600));
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary-600);
+  margin-bottom: var(--space-2);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Hero Actions */
+.hero-actions {
+  margin-top: var(--space-8);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-slow);
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--gray-500), var(--gray-600));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-outline {
+  background: white;
+  color: var(--gray-700);
+  border: 2px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-outline:hover {
+  background: var(--gray-50);
+  border-color: var(--primary-300);
+  color: var(--primary-700);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success-500), var(--success-600));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, var(--success-600), var(--success-700));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-error {
+  background: linear-gradient(135deg, var(--error-500), var(--error-600));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-error:hover {
+  background: linear-gradient(135deg, var(--error-600), var(--error-700));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-large {
+  padding: var(--space-4) var(--space-8);
+  font-size: 1rem;
+  border-radius: var(--radius-xl);
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.75rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Containers */
+.quiz-container {
+  background: white;
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-100);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.section-title i {
+  color: var(--primary-500);
+}
+
+/* Events Grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--space-6);
+}
+
+.event-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-400), var(--primary-600));
+  transform: scaleX(0);
+  transition: transform var(--transition-normal);
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-200);
+}
+
+.event-card:hover::before {
+  transform: scaleX(1);
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-4);
+}
+
+.event-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--space-2);
+}
+
+.event-status {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.event-status.active {
+  background: var(--success-100);
+  color: var(--success-700);
+}
+
+.event-status.completed {
+  background: var(--primary-100);
+  color: var(--primary-700);
+}
+
+.event-status.published {
+  background: var(--warning-100);
+  color: var(--warning-700);
+}
+
+.event-status.draft {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.event-description {
+  color: var(--gray-600);
+  margin-bottom: var(--space-4);
+  line-height: 1.6;
+}
+
+.event-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.meta-item i {
+  color: var(--primary-500);
+  width: 1rem;
+}
+
+/* Progress Bar */
+.event-progress {
+  margin-bottom: var(--space-4);
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-400), var(--primary-600));
+  border-radius: var(--radius-md);
+  transition: width var(--transition-slow);
+}
+
+/* Event Subjects */
+.event-subjects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.subject-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all var(--transition-normal);
+}
+
+.subject-status.completed {
+  background: var(--success-50);
+  color: var(--success-700);
+}
+
+.subject-status.pending {
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.subject-status i {
+  width: 1rem;
+}
+
+/* Event Actions */
+.event-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Teachers Grid */
+.teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+.teacher-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+}
+
+.teacher-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-200);
+}
+
+.teacher-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.teacher-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.teacher-info h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.teacher-subject {
+  color: var(--primary-600);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.teacher-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: var(--space-4);
+}
+
+.teacher-stat {
+  text-align: center;
+}
+
+.teacher-stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-600);
+}
+
+.teacher-stat-label {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Quizzes Overview */
+.quizzes-overview {
+  margin-top: var(--space-6);
+}
+
+.quizzes-summary {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  background: var(--gray-50);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gray-200);
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.summary-item i {
+  color: var(--primary-500);
+}
+
+.subject-section {
+  margin-bottom: var(--space-8);
+}
+
+.subject-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.quizzes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.quiz-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  transition: all var(--transition-normal);
+}
+
+.quiz-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-200);
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-3);
+}
+
+.quiz-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.quiz-subject {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.quiz-teacher {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+.quiz-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.quiz-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.75rem;
+  color: var(--gray-600);
+}
+
+.quiz-stat i {
+  color: var(--primary-500);
+}
+
+.quiz-meta {
+  margin-bottom: var(--space-4);
+  color: var(--gray-500);
+  font-size: 0.75rem;
+}
+
+.quiz-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: fadeIn var(--transition-normal);
+}
+
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 0;
+  border-radius: var(--radius-2xl);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-2xl);
+  animation: slideInFromTop var(--transition-slow);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.close {
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--gray-500);
+  border: none;
+  background: none;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.close:hover {
+  color: var(--error-500);
+  background: var(--error-50);
+}
+
+/* Form Styles */
+form {
+  padding: var(--space-6);
+}
+
+.form-group {
+  margin-bottom: var(--space-6);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 500;
+  color: var(--gray-700);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-3);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  transition: all var(--transition-normal);
+  background: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.form-hint {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Question Distribution */
+.question-distribution {
+  background: var(--gray-50);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  border: 1px solid var(--gray-200);
+}
+
+.distribution-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.distribution-item:last-child {
+  border-bottom: none;
+}
+
+.distribution-item strong {
+  color: var(--primary-600);
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  padding-top: var(--space-6);
+  margin-top: var(--space-6);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--space-16) var(--space-8);
+  color: var(--gray-500);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: var(--gray-300);
+  margin-bottom: var(--space-6);
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: var(--space-3);
+}
+
+.empty-state p {
+  margin-bottom: var(--space-6);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Alert Styles */
+.alert {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  animation: slideInFromRight var(--transition-normal);
+}
+
+.alert-success {
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-200);
+}
+
+.alert-error {
+  background: var(--error-50);
+  color: var(--error-700);
+  border: 1px solid var(--error-200);
+}
+
+.alert-warning {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-200);
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-2 {
+  margin-top: var(--space-2);
+}
+
+.fa-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Loading Spinner */
+.loading {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+</style>

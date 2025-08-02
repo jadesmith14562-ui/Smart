@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Smart Steps Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/contact.css">
+    <script src="js/contact.js" defer></script>
+    <link rel="stylesheet" href="css/logo.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" style="background: linear-gradient(135deg, #667eea, #764ba2);
+">
+        <nav class="nav-container">
+          <a href="#" class="logo"><img src="img/steps_smart.png" alt=""> Smart Steps</a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="index.html" class="nav-link"> Home</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="About Us.html" class="nav-link"> About</a></li>
+                <li><a href="Contact.html" class="nav-link"> Contact</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h1> Contact Us</h1>
+                <p>Ready to take your JAMB/UTME preparation to the next level? Reach out to us today, and we will assist you in reaching your academic goals!</p>
+            </section>
+
+            <!-- Contact Section -->
+            <section class="contact-section">
+                <div class="contact-grid">
+                    <!-- Contact Information -->
+                    <div class="contact-info">
+                        <h2><i class="fas fa-info-circle"></i> Get In Touch</h2>
+                        
+                      
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="info-content">
+                                <h3>Call Us</h3>
+                                <p>+234 814 519 6250<br>+234 814 131 4384</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-content">
+                                <h3>Email Us</h3>
+                                <p>smartstepstutorial1@gmail.com<br></p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="info-content">
+                                <h3>Operating Hours</h3>
+                                <p>Monday - Friday: 8:00 AM - 6:00 PM<br>Saturday: 9:00 AM - 4:00 PM<br>Sunday: Closed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="contact-form">
+                        <h2><i class="fas fa-paper-plane"></i> Send Message</h2>
+                        <form id="contactForm">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject">Subject of Interest</label>
+                                <select id="subject" name="subject">
+                                    <option value="">Select a subject</option>
+                                    <option value="mathematics">Mathematics</option>
+                                    <option value="physics">Physics</option>
+                                    <option value="chemistry">Chemistry</option>
+                                    <option value="biology">Biology</option>
+                                    <option value="english">English Language</option>
+                                    <option value="general">General Inquiry</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Message *</label>
+                                <textarea id="message" name="message" placeholder="Tell us how we can help you..." required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                Send Message
+                            </button>
+                            
+                            <div class="success-message" id="successMessage">
+                                <i class="fas fa-check-circle"></i>
+                                Thank you for your message! We will get back to you within 24 hours.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tutorial Information -->
+            <section class="tutorial-info">
+                <h2><i class="fas fa-chalkboard-teacher"></i> Our JAMB/UTME Tutorial Services</h2>
+                
+                <div class="subjects-grid">
+                    <div class="subject-card">
+                        <i class="fas fa-calculator"></i>
+                        <h3>Mathematics</h3>
+                        <p>In this section, you'll master the key math skills needed to ace JAMB.</p>
+                    </div>
+                    
+                    <div class="subject-card">
+                        <i class="fas fa-atom"></i>
+                        <h3>Physics</h3>
+                        <p>Understand mechanics, electricity, waves, and modern physics concepts. Get ready to explore the core principles of Physics for JAMB success.</p>
+                    </div>
+                    
+                    <div class="subject-card">
+                        <i class="fas fa-flask"></i>
+                        <h3>Chemistry</h3>
+                        <p>Learn organic, inorganic, and physical chemistry with practical applications</p>
+                    </div>
+                    
+                    <div class="subject-card">
+                        <i class="fas fa-dna"></i>
+                        <h3>Biology</h3>
+                        <p>In this section, we’ll break down important Biology topics, helping you understand key concepts and processes that are frequently tested in the JAMB exam.</p>
+                    </div>
+                    
+                    <div class="subject-card">
+                        <i class="fas fa-book-open"></i>
+                        <h3>English Language</h3>
+                        <p>In this section, you'll build strong skills in comprehension, grammar, vocabulary, and oral English, everything you need to confidently tackle the English Language section of the JAMB exam.</p>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature-card">
+                        <i class="fas fa-users-cog"></i>
+                        <h3>Result Driven</h3>
+                        <p>Designed to help you achieve your best possible score by focusing on exam techniques and essential knowledge.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Pratice Focused</h3>
+                        <p>Get plenty of practice questions and mock tests to build confidence and improve your speed.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-laptop"></i>
+                        <h3>Modern Learning</h3>
+                        <p>Interactive online classes, practice tests, and comprehensive study materials</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Comprehensive Coverage</h3>
+                        <p>We cover all key subjects and topics, ensuring you’re fully prepared for every part of the exam.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <h3>Affordable Fees</h3>
+                        <p>Quality education at competitive prices with flexible payment options</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-headset"></i>
+                        <h3>24/7 Support</h3>
+                        <p>Get help anytime with our dedicated student support team</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Smart Steps Tutorial</h3>
+                    </div>
+                    <p>Empowering students to achieve excellence in JAMB/UTME examinations through quality education and dedicated support.</p>
+                    <div class="social-links">
+                      <a href="https://www.facebook.com/groups/716996774380829" target="_blank" rel="noopener noreferrer">
+  <i class="fab fa-facebook"></i>
+</a>
+
+                        <a href="https://www.youtube.com/channel/UCzwmSE40Qaagyy7VoDZcdhw" target="_blank" rel="noopener noreferrer">
+  <i class="fab fa-youtube"></i>
+</a>
+
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="About Us.html">About Us</a></li>
+                        <li><a href="Contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Our Subjects</h4>
+                    <ul>
+                        <li><a href="#">Mathematics</a></li>
+                        <li><a href="#">Physics</a></li>
+                        <li><a href="#">Chemistry</a></li>
+                        <li><a href="#">Biology</a></li>
+                        <li><a href="#">English Language</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                 
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <p>+234 814 519 6250<br>+234 814 131 4384</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>smartstepstutorial1@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 Smart Steps Tutorial. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+<style>
+    header {
+       background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+</style>  
+</body>
+</html>

@@ -589,6 +589,29 @@ body::before {
         
         margin-bottom: 10px;
     }
+    
+    #addPassageBtn {
+        margin-bottom: 10px;
+    }
+    
+    .event-info-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .event-info-details {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+    
+    .passage-item {
+        padding: var(--spacing-lg);
+    }
+    
+    .passage-questions-container .question-item {
+        margin-left: 0;
+        padding-left: var(--spacing-sm);
+    }
   .navbar {
     padding: var(--spacing-sm) var(--spacing-md);
   }

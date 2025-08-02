@@ -15,10 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const subjectLabel = document.getElementById('subjectLabel');
     const questionsContainer = document.getElementById('questionsContainer');
     const addQuestionBtn = document.getElementById('addQuestionBtn');
+    const addPassageBtn = document.getElementById('addPassageBtn');
     const contributeForm = document.getElementById('contributeForm');
 
     // Event Listeners
     addQuestionBtn.addEventListener('click', addQuestion);
+    addPassageBtn.addEventListener('click', addReadingPassage);
     contributeForm.addEventListener('submit', saveQuestions);
     document.getElementById('logoutBtn').addEventListener('click', logout);
 
@@ -70,6 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const mySubjectData = eventData.subjects.find(s => s.subject === teacherData.teacher.subject);
         const myProgress = mySubjectData ? mySubjectData.questionCount : 0;
         
+        // Get the correct question requirement based on subject
+        const requiredQuestions = getRequiredQuestions(teacherData.teacher.subject);
+        
         eventInfoBanner.innerHTML = `
             <div class="event-info-card">
                 <div class="event-info-header">
@@ -83,11 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="info-item">
                         <i class="fas fa-list-ol"></i>
-                        <span>Required: <strong>${eventData.questionsPerSubject} questions</strong></span>
+                        <span>Required: <strong>${requiredQuestions} questions</strong></span>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-check-circle"></i>
-                        <span>Completed: <strong>${myProgress}/${eventData.questionsPerSubject}</strong></span>
+                        <span>Completed: <strong>${myProgress}/${requiredQuestions}</strong></span>
                     </div>
                     <div class="info-item ${daysLeft <= 1 ? 'urgent' : ''}">
                         <i class="fas fa-calendar-alt"></i>
@@ -96,9 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="progress-container">
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${(myProgress / eventData.questionsPerSubject) * 100}%"></div>
+                        <div class="progress-fill" style="width: ${(myProgress / requiredQuestions) * 100}%"></div>
                     </div>
-                    <div class="progress-text">${myProgress}/${eventData.questionsPerSubject} questions completed</div>
+                    <div class="progress-text">${myProgress}/${requiredQuestions} questions completed</div>
                 </div>
             </div>
         `;
@@ -106,14 +111,144 @@ document.addEventListener('DOMContentLoaded', function() {
         subjectLabel.innerHTML = `<i class="fas fa-question-circle"></i> ${teacherData.teacher.subject} Questions`;
     }
 
+    function getRequiredQuestions(subject) {
+        // English Language requires 60 questions, others require 40
+        return subject === 'English' ? 60 : 40;
+    }
+
     function loadExistingQuestions() {
         if (existingQuestions.length > 0) {
             existingQuestions.forEach((question, index) => {
-                addQuestion(question, index + 1);
+                if (question.passageId) {
+                    // This is a passage question - we need to handle it differently
+                    // For now, add as regular question but we should improve this
+                    addQuestion(question, index + 1);
+                } else {
+                    addQuestion(question, index + 1);
+                }
             });
         } else {
             // Add first empty question
             addQuestion();
+        }
+    }
+
+    function addReadingPassage() {
+        questionCount++;
+        const passageHTML = `
+            <div class="passage-item" id="question-${questionCount}">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-book-open"></i>
+                        Reading Passage ${questionCount}
+                    </label>
+                    <textarea name="passage-${questionCount}" class="form-input" required 
+                              placeholder="Enter the reading passage here..." 
+                              style="min-height: 200px; resize: vertical;"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-list-ol"></i>
+                        Number of Questions for this Passage
+                    </label>
+                    <select name="passage-questions-${questionCount}" class="form-input" required>
+                        <option value="">Select number of questions</option>
+                        <option value="3">3 Questions</option>
+                        <option value="5">5 Questions</option>
+                        <option value="7">7 Questions</option>
+                        <option value="10">10 Questions</option>
+                        <option value="15">15 Questions</option>
+                    </select>
+                </div>
+
+                <div id="passage-questions-${questionCount}" class="passage-questions-container">
+                    <!-- Questions will be added here dynamically -->
+                </div>
+
+                <div class="text-right">
+                    <button type="button" class="btn btn-error" onclick="removeQuestion(${questionCount})">
+                        <i class="fas fa-trash"></i>
+                        Remove Passage
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        questionsContainer.insertAdjacentHTML('beforeend', passageHTML);
+        
+        const questionCountSelect = document.querySelector(`select[name="passage-questions-${questionCount}"]`);
+        questionCountSelect.addEventListener('change', function() {
+            generatePassageQuestions(questionCount, parseInt(this.value));
+        });
+    }
+
+    function generatePassageQuestions(passageId, questionCount) {
+        const container = document.getElementById(`passage-questions-${passageId}`);
+        container.innerHTML = '';
+        
+        if (!questionCount) return;
+        
+        for (let i = 1; i <= questionCount; i++) {
+            const questionHTML = `
+                <div class="question-item" style="margin-top: 2rem; border-left: 4px solid #667eea; padding-left: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-question-circle"></i>
+                            Question ${i}
+                        </label>
+                        <input type="text" name="passage-${passageId}-question-${i}" class="form-input" required 
+                               placeholder="Enter question ${i} for this passage">
+                    </div>
+                    
+                    <div class="form-group" data-question="passage-${passageId}-${i}">
+                        <label class="form-label">
+                            <i class="fas fa-image"></i>
+                            Question Images (Optional, up to 3)
+                        </label>
+                        <div class="image-upload-container">
+                            <div class="image-upload-area">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Drag and drop or click to upload images (max 3)</span>
+                                <input type="file" class="image-input" accept="image/*" multiple>
+                            </div>
+                            <div class="image-preview-container"></div>
+                            <input type="hidden" class="image-urls-input" name="passage-${passageId}-image-urls-${i}">
+                            <input type="hidden" class="image-public-ids-input" name="passage-${passageId}-image-public-ids-${i}">
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label class="form-label">
+                            <i class="fas fa-list"></i>
+                            Options (Select the correct answer)
+                        </label>
+                        
+                        <div class="option-item">
+                            <input type="radio" name="passage-${passageId}-correct-${i}" value="0" required>
+                            <input type="text" name="passage-${passageId}-option-${i}-0" class="form-input" required placeholder="Option A">
+                        </div>
+                        
+                        <div class="option-item">
+                            <input type="radio" name="passage-${passageId}-correct-${i}" value="1" required>
+                            <input type="text" name="passage-${passageId}-option-${i}-1" class="form-input" required placeholder="Option B">
+                        </div>
+                        
+                        <div class="option-item">
+                            <input type="radio" name="passage-${passageId}-correct-${i}" value="2" required>
+                            <input type="text" name="passage-${passageId}-option-${i}-2" class="form-input" required placeholder="Option C">
+                        </div>
+                        
+                        <div class="option-item">
+                            <input type="radio" name="passage-${passageId}-correct-${i}" value="3" required>
+                            <input type="text" name="passage-${passageId}-option-${i}-3" class="form-input" required placeholder="Option D">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', questionHTML);
+            initializeImageUpload(`passage-${passageId}-${i}`);
         }
     }
 
@@ -194,6 +329,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function initializeImageUpload(questionId) {
         const container = document.querySelector(`[data-question="${questionId}"]`);
+        if (!container) return;
+        
         const fileInput = container.querySelector('.image-input');
         const uploadArea = container.querySelector('.image-upload-area');
         const previewContainer = container.querySelector('.image-preview-container');
@@ -203,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentImages = [];
         
         // Load existing images
-        if (urlsInput.value) {
+        if (urlsInput && urlsInput.value) {
             const urls = urlsInput.value.split(',').filter(url => url);
             const publicIds = publicIdsInput.value.split(',').filter(id => id);
             currentImages = urls.map((url, index) => ({
@@ -212,55 +349,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }));
         }
 
-        uploadArea.addEventListener('click', () => fileInput.click());
+        if (uploadArea) {
+            uploadArea.addEventListener('click', () => fileInput.click());
 
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = Array.from(e.dataTransfer.files);
-            handleImageUpload(files);
-        });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                handleImageUpload(files);
+            });
+        }
 
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            handleImageUpload(files);
-        });
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                handleImageUpload(files);
+            });
+        }
 
         function updatePreview() {
+            if (!previewContainer) return;
+            
             const existingPreviews = previewContainer.querySelectorAll('.image-preview');
             existingPreviews.forEach(preview => {
                 const removeBtn = preview.querySelector('.image-remove-btn');
-                removeBtn.addEventListener('click', async () => {
-                    const index = parseInt(removeBtn.dataset.index);
-                    const publicId = currentImages[index].publicId;
-                    if (publicId) {
-                        try {
-                            await fetch(`/api/delete-image/${publicId}`, { method: 'DELETE' });
-                        } catch (error) {
-                            console.error('Error deleting image:', error);
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', async () => {
+                        const index = parseInt(removeBtn.dataset.index);
+                        const publicId = currentImages[index].publicId;
+                        if (publicId) {
+                            try {
+                                await fetch(`/api/delete-image/${publicId}`, { method: 'DELETE' });
+                            } catch (error) {
+                                console.error('Error deleting image:', error);
+                            }
                         }
-                    }
-                    currentImages.splice(index, 1);
-                    updateInputs();
-                    updatePreview();
-                });
+                        currentImages.splice(index, 1);
+                        updateInputs();
+                        updatePreview();
+                    });
+                }
             });
 
-            uploadArea.style.display = currentImages.length >= 3 ? 'none' : 'block';
+            if (uploadArea) {
+                uploadArea.style.display = currentImages.length >= 3 ? 'none' : 'block';
+            }
         }
 
         function updateInputs() {
-            urlsInput.value = currentImages.map(img => img.url).join(',');
-            publicIdsInput.value = currentImages.map(img => img.publicId).join(',');
+            if (urlsInput) urlsInput.value = currentImages.map(img => img.url).join(',');
+            if (publicIdsInput) publicIdsInput.value = currentImages.map(img => img.publicId).join(',');
         }
 
         async function handleImageUpload(files) {
@@ -282,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            uploadArea.style.display = 'none';
+            if (uploadArea) uploadArea.style.display = 'none';
             const progress = document.createElement('div');
             progress.className = 'upload-progress';
             progress.innerHTML = `
@@ -319,7 +466,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 showAlert('Error uploading images: ' + error.message, 'error');
             } finally {
                 progress.remove();
-                uploadArea.style.display = currentImages.length >= 3 ? 'none' : 'block';
+                if (uploadArea) {
+                    uploadArea.style.display = currentImages.length >= 3 ? 'none' : 'block';
+                }
             }
         }
 
@@ -334,7 +483,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const questionElement = document.getElementById(`question-${questionId}`);
-        const publicIdsInput = questionElement.querySelector(`input[name="image-public-ids-${questionId}"]`);
+        if (!questionElement) return;
+        
+        const publicIdsInput = questionElement.querySelector(`input[name="image-public-ids-${questionId}"], input[name*="image-public-ids-"]`);
         
         if (publicIdsInput && publicIdsInput.value) {
             const publicIds = publicIdsInput.value.split(',');
@@ -354,38 +505,52 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function renumberQuestions() {
-        const questions = document.querySelectorAll('.question-item');
+        const questions = document.querySelectorAll('.question-item, .passage-item');
         questions.forEach((question, index) => {
             const newNumber = index + 1;
             question.id = `question-${newNumber}`;
             
-            const label = question.querySelector('.form-label');
-            label.innerHTML = `<i class="fas fa-question-circle"></i> Question ${newNumber}`;
-            
-            const questionInput = question.querySelector('input[type="text"]');
-            if (questionInput) questionInput.name = `question-${newNumber}`;
-            
-            const radioInputs = question.querySelectorAll('input[type="radio"]');
-            radioInputs.forEach(radio => {
-                radio.name = `correct-${newNumber}`;
-            });
-            
-            const optionInputs = question.querySelectorAll('input[type="text"]:not(:first-child)');
-            optionInputs.forEach((input, optionIndex) => {
-                input.name = `option-${newNumber}-${optionIndex}`;
-            });
-            
-            const imageContainer = question.querySelector('[data-question]');
-            if (imageContainer) imageContainer.dataset.question = newNumber;
-            
-            const imageUrlsInput = question.querySelector('.image-urls-input');
-            if (imageUrlsInput) imageUrlsInput.name = `image-urls-${newNumber}`;
-            
-            const imagePublicIdsInput = question.querySelector('.image-public-ids-input');
-            if (imagePublicIdsInput) imagePublicIdsInput.name = `image-public-ids-${newNumber}`;
-            
-            const removeBtn = question.querySelector('.btn-error');
-            if (removeBtn) removeBtn.setAttribute('onclick', `removeQuestion(${newNumber})`);
+            if (question.classList.contains('passage-item')) {
+                const label = question.querySelector('.form-label');
+                if (label) label.innerHTML = `<i class="fas fa-book-open"></i> Reading Passage ${newNumber}`;
+                
+                const passageTextarea = question.querySelector('textarea');
+                if (passageTextarea) passageTextarea.name = `passage-${newNumber}`;
+                
+                const questionCountSelect = question.querySelector('select');
+                if (questionCountSelect) questionCountSelect.name = `passage-questions-${newNumber}`;
+                
+                const questionsContainer = question.querySelector('.passage-questions-container');
+                if (questionsContainer) questionsContainer.id = `passage-questions-${newNumber}`;
+            } else {
+                const label = question.querySelector('.form-label');
+                if (label) label.innerHTML = `<i class="fas fa-question-circle"></i> Question ${newNumber}`;
+                
+                const questionInput = question.querySelector('input[type="text"]');
+                if (questionInput) questionInput.name = `question-${newNumber}`;
+                
+                const radioInputs = question.querySelectorAll('input[type="radio"]');
+                radioInputs.forEach(radio => {
+                    radio.name = `correct-${newNumber}`;
+                });
+                
+                const optionInputs = question.querySelectorAll('input[type="text"]:not(:first-child)');
+                optionInputs.forEach((input, optionIndex) => {
+                    input.name = `option-${newNumber}-${optionIndex}`;
+                });
+                
+                const imageContainer = question.querySelector('[data-question]');
+                if (imageContainer) imageContainer.dataset.question = newNumber;
+                
+                const imageUrlsInput = question.querySelector('.image-urls-input');
+                if (imageUrlsInput) imageUrlsInput.name = `image-urls-${newNumber}`;
+                
+                const imagePublicIdsInput = question.querySelector('.image-public-ids-input');
+                if (imagePublicIdsInput) imagePublicIdsInput.name = `image-public-ids-${newNumber}`;
+                
+                const removeBtn = question.querySelector('.btn-error');
+                if (removeBtn) removeBtn.setAttribute('onclick', `removeQuestion(${newNumber})`);
+            }
         });
         
         questionCount = questions.length;
@@ -396,27 +561,66 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const formData = new FormData(e.target);
         const questions = [];
+        const passages = [];
         
         for (let i = 1; i <= questionCount; i++) {
-            const question = formData.get(`question-${i}`);
-            if (question) {
-                const options = [
-                    formData.get(`option-${i}-0`),
-                    formData.get(`option-${i}-1`),
-                    formData.get(`option-${i}-2`),
-                    formData.get(`option-${i}-3`)
-                ];
-                const correctAnswer = parseInt(formData.get(`correct-${i}`));
-                const imageUrls = formData.get(`image-urls-${i}`)?.split(',').filter(url => url) || [];
-                const imagePublicIds = formData.get(`image-public-ids-${i}`)?.split(',').filter(id => id) || [];
+            const passageText = formData.get(`passage-${i}`);
+            if (passageText) {
+                // This is a reading passage
+                const passageQuestionCount = parseInt(formData.get(`passage-questions-${i}`));
+                const passageQuestions = [];
                 
-                questions.push({
-                    question,
-                    options,
-                    correctAnswer,
-                    imageUrls,
-                    imagePublicIds
+                for (let j = 1; j <= passageQuestionCount; j++) {
+                    const question = formData.get(`passage-${i}-question-${j}`);
+                    const options = [
+                        formData.get(`passage-${i}-option-${j}-0`),
+                        formData.get(`passage-${i}-option-${j}-1`),
+                        formData.get(`passage-${i}-option-${j}-2`),
+                        formData.get(`passage-${i}-option-${j}-3`)
+                    ];
+                    const correctAnswer = parseInt(formData.get(`passage-${i}-correct-${j}`));
+                    const imageUrls = formData.get(`passage-${i}-image-urls-${j}`)?.split(',').filter(url => url) || [];
+                    const imagePublicIds = formData.get(`passage-${i}-image-public-ids-${j}`)?.split(',').filter(id => id) || [];
+                    
+                    passageQuestions.push({
+                        question,
+                        options,
+                        correctAnswer,
+                        passageId: `passage-${i}`,
+                        imageUrls,
+                        imagePublicIds
+                    });
+                }
+                
+                passages.push({
+                    id: `passage-${i}`,
+                    text: passageText,
+                    questionCount: passageQuestionCount
                 });
+                
+                questions.push(...passageQuestions);
+            } else {
+                // Regular question
+                const question = formData.get(`question-${i}`);
+                if (question) {
+                    const options = [
+                        formData.get(`option-${i}-0`),
+                        formData.get(`option-${i}-1`),
+                        formData.get(`option-${i}-2`),
+                        formData.get(`option-${i}-3`)
+                    ];
+                    const correctAnswer = parseInt(formData.get(`correct-${i}`));
+                    const imageUrls = formData.get(`image-urls-${i}`)?.split(',').filter(url => url) || [];
+                    const imagePublicIds = formData.get(`image-public-ids-${i}`)?.split(',').filter(id => id) || [];
+                    
+                    questions.push({
+                        question,
+                        options,
+                        correctAnswer,
+                        imageUrls,
+                        imagePublicIds
+                    });
+                }
             }
         }
 
@@ -425,8 +629,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (questions.length > eventData.questionsPerSubject) {
-            showAlert(`Maximum ${eventData.questionsPerSubject} questions allowed for this event`, 'error');
+        const requiredQuestions = getRequiredQuestions(teacherData.teacher.subject);
+        if (questions.length > requiredQuestions) {
+            showAlert(`Maximum ${requiredQuestions} questions allowed for ${teacherData.teacher.subject}`, 'error');
             return;
         }
 
@@ -441,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ questions })
+                body: JSON.stringify({ questions, passages })
             });
 
             const result = await response.json();
